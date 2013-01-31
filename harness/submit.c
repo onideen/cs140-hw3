@@ -43,7 +43,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 	double dist, theta;
 	srand(time(NULL));
 	for(i = 0; i <10;i++){
-		printf("%i \n", rand());
+		printf("%f \n", (float)rand());
 
 	}
 	for (i = 0; i < n; i++) {
