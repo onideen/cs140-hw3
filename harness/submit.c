@@ -5,6 +5,10 @@ Team Member 2 : Vegar Engen
 */
 
 #include "nBody.h"
+#include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 void readnbody(double** s, double** v, double* m, int n) {
 	int myrank;
@@ -33,8 +37,11 @@ void gennbody(double** s, double** v, double* m, int n) {
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * rand();
 		dist = 0.5e13 * rand();
+		theta = 2*M_PI*rand();
 
-		s[i][0] = dist;
+		s[i][0] = dist*cos(theta);
+		s[i][1] = dist*sin(theta);
+		s[i][2] = 1e11*(rand()-.5);
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
