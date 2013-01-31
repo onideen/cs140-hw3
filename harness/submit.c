@@ -36,7 +36,8 @@ void gennbody(double** s, double** v, double* m, int n) {
 	double dist, theta;
 	for(i = 0; i <10;i++){
 		unsigned int seed = time(0);
-		printf("%i \n",srand ( seed ));
+		srand ( seed )
+		printf("%i \n",rand());
 	}
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * rand();
