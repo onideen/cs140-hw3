@@ -44,7 +44,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 	printf("RAND_MAX: %i", RAND_MAX);
 	srand(time(NULL));
 	for(i = 0; i <10;i++){
-		printf("%f \n", (float)rand());
+		printf("%f \n", (float)rand()/RAND_MAX);
 
 	}
 	for (i = 0; i < n; i++) {
