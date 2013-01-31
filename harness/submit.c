@@ -11,12 +11,6 @@ Team Member 2 : Vegar Engen
 #endif
 
 
-float my_random() {
-
-	return (float)rand()/(float)RAND_MAX;
-}
-
-
 void readnbody(double** s, double** v, double* m, int n) {
 	int myrank;
 	int nprocs;
@@ -48,13 +42,13 @@ void gennbody(double** s, double** v, double* m, int n) {
 
 	}
 	for (i = 0; i < n; i++) {
-		m[i] = 1e30 * (float)rand()/(float)RAND_MAX;
-		dist = 0.5e13 * (float)rand()/(float)RAND_MAX;
-		theta = 2*M_PI*(float)rand()/(float)RAND_MAX;
+		m[i] = 1e30 * (float)rand()/RAND_MAX;
+		dist = 0.5e13 * (float)rand()/RAND_MAX;
+		theta = 2*M_PI*(float)rand()/RAND_MAX;
 
 		s[i][0] = dist*cos(theta);
 		s[i][1] = dist*sin(theta);
-		s[i][2] = 1e11*((float)rand()/(float)RAND_MAX-.5);
+		s[i][2] = 1e11*((float)rand()/RAND_MAX-.5);
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
