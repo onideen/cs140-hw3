@@ -1,7 +1,7 @@
 /*
 Assignment 3 
-Team Member 1 :
-Team Member 2 :
+Team Member 1 : Arne Bjune
+Team Member 2 : Vegar Engen
 */
 
 #include "nBody.h"
@@ -28,6 +28,19 @@ void readnbody(double** s, double** v, double* m, int n) {
 }
 
 void gennbody(double** s, double** v, double* m, int n) {
+	int i, j;
+	double dist, theta;
+	for (i = 0; i < n; i++) {
+		m[i] = 1e30 * rand();
+		dist = 0.5e13 * rand();
+
+		s[i][0] = dist 
+
+		for (j = 0; j < 3; j++) {
+			v[i][j] = 0;
+		}
+	}
+
 	printf("Generate nBody initial condition here.\n");
 }
 
