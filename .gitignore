@@ -2,3 +2,4 @@ matlab
 old
 *.pdf
 *.o
+*sh
