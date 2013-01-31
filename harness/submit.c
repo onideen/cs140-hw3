@@ -34,7 +34,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 		m[i] = 1e30 * rand();
 		dist = 0.5e13 * rand();
 
-		s[i][0] = dist 
+		s[i][0] = dist;
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
