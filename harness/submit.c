@@ -34,7 +34,9 @@ void readnbody(double** s, double** v, double* m, int n) {
 void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
-	printf("%i \n",rand());
+	for(i = 0; i <10;i++){
+		printf("%i \n",rand());
+	}
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * rand();
 		dist = 0.5e13 * rand();
