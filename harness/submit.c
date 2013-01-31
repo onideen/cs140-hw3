@@ -35,7 +35,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
 	for(i = 0; i <10;i++){
-		printf("%i \n",rand());
+		printf("%i \n",rand() % 10);
 	}
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * rand();
