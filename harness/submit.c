@@ -10,6 +10,12 @@ Team Member 2 : Vegar Engen
 #define M_PI 3.14159265358979323846
 #endif
 
+
+float random() {
+	return (float)rand()/(float)RAND_MAX;
+}
+
+
 void readnbody(double** s, double** v, double* m, int n) {
 	int myrank;
 	int nprocs;
@@ -36,17 +42,17 @@ void gennbody(double** s, double** v, double* m, int n) {
 	double dist, theta;
 	srand(time(NULL));
 	for(i = 0; i <10;i++){
-		printf("%i \n",rand());
+		printf("%i \n",random());
 
 	}
 	for (i = 0; i < n; i++) {
-		m[i] = 1e30 * rand();
-		dist = 0.5e13 * rand();
-		theta = 2*M_PI*rand();
+		m[i] = 1e30 * random();
+		dist = 0.5e13 * random();
+		theta = 2*M_PI*random();
 
 		s[i][0] = dist*cos(theta);
 		s[i][1] = dist*sin(theta);
-		s[i][2] = 1e11*(rand()-.5);
+		s[i][2] = 1e11*(random()-.5);
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
