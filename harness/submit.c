@@ -50,6 +50,13 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	int i;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+
+	// S = posisjon
+	// V = hastighet
+	// m = masse
+	// n = antall planeter
+	// iter = antall steg
+	// timestep = tid mellom steg
 	
 	// This is an example of printing the body parameters to the stderr. Your code should print out the final body parameters
 	// in the exact order as the input file. Since we are writing to the stderr in this case, rather than the stdout, make
