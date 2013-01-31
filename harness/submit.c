@@ -12,6 +12,7 @@ Team Member 2 : Vegar Engen
 
 
 float my_random() {
+
 	return (float)rand()/(float)RAND_MAX;
 }
 
@@ -42,17 +43,17 @@ void gennbody(double** s, double** v, double* m, int n) {
 	double dist, theta;
 	srand(time(NULL));
 	for(i = 0; i <10;i++){
-		printf("%i \n",my_random());
+		printf("%i \n",(float)rand()/(float)RAND_MAX);
 
 	}
 	for (i = 0; i < n; i++) {
-		m[i] = 1e30 * my_random();
-		dist = 0.5e13 * my_random();
-		theta = 2*M_PI*my_random();
+		m[i] = 1e30 * (float)rand()/(float)RAND_MAX;
+		dist = 0.5e13 * (float)rand()/(float)RAND_MAX;
+		theta = 2*M_PI*(float)rand()/(float)RAND_MAX;
 
 		s[i][0] = dist*cos(theta);
 		s[i][1] = dist*sin(theta);
-		s[i][2] = 1e11*(my_random()-.5);
+		s[i][2] = 1e11*((float)rand()/(float)RAND_MAX-.5);
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
