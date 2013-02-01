@@ -47,8 +47,14 @@ void readnbody(double** s, double** v, double* m, int n) {
 void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
-	printf("RAND_MAX: %i \n", RAND_MAX);
-//	srand(time(NULL));
+	int myrank, nprocs, nbody;
+	
+	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+
+	nbody = n/nprocs;
+
+	srand(time(NULL)*myrank);
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
@@ -61,7 +67,11 @@ void gennbody(double** s, double** v, double* m, int n) {
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
 		}
+		printf("CPU nr %d: ",myrank);
+		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+	
 	}
+
 }
 
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {

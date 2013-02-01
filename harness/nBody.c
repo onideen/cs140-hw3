@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 		gennbody(s, v, m, n);
 	}
 
-	nbody(s, v, m, n, iters, timestep);
+	//nbody(s, v, m, n, iters, timestep);
 
 	for (i = 0; i < size; i++) {
 		free(s[i]);
