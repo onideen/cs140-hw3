@@ -40,7 +40,6 @@ void gennbody(double** s, double** v, double* m, int n) {
 	srand(time(NULL));
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
-		printf("m[i]: %1.4e \n", m[i]);		
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
 		theta = 2*M_PI*(float)rand()/RAND_MAX;
 
