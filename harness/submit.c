@@ -22,13 +22,25 @@ void readnbody(double** s, double** v, double* m, int n) {
 	// This is an example of reading the body parameters from the input file. 
 	if (myrank == 0) {
 		for (i = 0; i < n; i++) {
-			double x, y, z, vx, vy, vz, m;
+			double x, y, z, vx, vy, vz, ma;
 
-			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &m);
+			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
 			if (result != 7) {
 				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
 				exit(0);
 			}
+
+			s[i][0] = x;
+			s[i][1] = y;
+			s[i][2] = z;
+
+			v[i][0] = vx;
+			v[i][1] = vy;
+			v[i][2] = vz;
+
+			m[i] = ma;
+
+
 			
 		}
 	}
@@ -41,7 +53,6 @@ void gennbody(double** s, double** v, double* m, int n) {
 //	srand(time(NULL));
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
-		printf("m[i]: %1.4e \n", m[i]);
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
 		theta = 2*M_PI*(float)rand()/RAND_MAX;
 
