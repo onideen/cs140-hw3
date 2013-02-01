@@ -55,7 +55,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 	nbody = n/nprocs;
 
 	srand(time(NULL)*myrank);
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < nbody; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
 		theta = 2*M_PI*(float)rand()/RAND_MAX;
