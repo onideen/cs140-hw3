@@ -37,7 +37,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 			v[i][1] = vy;
 			v[i][2] = vz;
 
-			s[i] = m;
+			m[i] = m;
 
 			
 		}
