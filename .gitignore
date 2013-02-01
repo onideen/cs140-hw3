@@ -3,5 +3,6 @@ old
 *.pdf
 *.o
 *sh
-*.c~
 assn3
+*~
+

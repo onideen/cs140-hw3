@@ -11,6 +11,7 @@ Team Member 2 : Vegar Engen
 #endif
 double norm(double * x);
 
+
 void readnbody(double** s, double** v, double* m, int n) {
 	int myrank;
 	int nprocs;
@@ -35,26 +36,21 @@ void readnbody(double** s, double** v, double* m, int n) {
 void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
+	printf("RAND_MAX: %i", RAND_MAX);
 	srand(time(NULL));
-	for(i = 0; i <10;i++){
-		printf("%i \n",rand());
-
-	}
 	for (i = 0; i < n; i++) {
-		m[i] = 1e30 * rand();
-		dist = 0.5e13 * rand();
-		theta = 2*M_PI*rand();
+		m[i] = 1e30 * (float)rand()/RAND_MAX;
+		dist = 0.5e13 * (float)rand()/RAND_MAX;
+		theta = 2*M_PI*(float)rand()/RAND_MAX;
 
 		s[i][0] = dist*cos(theta);
 		s[i][1] = dist*sin(theta);
-		s[i][2] = 1e11*(rand()-.5);
+		s[i][2] = 1e11*((float)rand()/RAND_MAX-.5);
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
 		}
 	}
-
-	printf("Generate nBody initial condition here.\n");
 }
 
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
