@@ -66,10 +66,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
-		}
-		printf("CPU nr %d: ",myrank);
-		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
-	
+		}	
 	}
 
 }
