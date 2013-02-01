@@ -29,6 +29,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
 				exit(0);
 			}
+			
 		}
 	}
 }
@@ -90,7 +91,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
 		for(j = 0; j < size;j++){			//for loop for en spesefikk planet
-			//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
+			printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
 
 			for(k = 0; k < 3; k++){
 				acceleration[j][k] = 0;	
