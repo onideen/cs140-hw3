@@ -64,7 +64,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 	size = n / nprocs;
-	m = (double *)malloc(sizeof(double) * 3);	
+	//m = (double *)malloc(sizeof(double) * 3);	
 	acceleration = (double **)malloc(sizeof(double *) * size);	
 
 	for (i = 0; i < size; i++) {
@@ -75,7 +75,8 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 		}
 	}	
 
-	G = 6.674e-11;	
+	G = 6.674e-11;
+	
 
 	// s = posisjon
 	// v = hastighet
@@ -98,18 +99,19 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					
 				}
 				r = norm(distance);
-				printf("Avstand mellom %i og %i er %f \n",j,k,r);
+				printf("Avstand mellom %i og %i er %1.4e \n",j,k,r);
 				if(r==0) continue;
 				f = (G * m[j] * m[k] ) / (r*r);
-				printf("F er: %f , G er: %f \n", f, G);
+				//f = 2.0;
+				printf("F er: %1.4e , G er: %1.4e , m[%i]: %1.4e, m[%i]: %1.4e \n", f, G,j,m[j],k,m[k]);
 				for(l = 0; l < 3;l++){
-					distance[l] = (distance[l] * f / r) / m[j];
+					distance[l] = ((distance[l] * f )/ r) / m[j];
 					acceleration[j][l] = acceleration[j][l] - distance[l];
 				}
 
 			}
 			for(k=0;k<3;k++){
-				printf("Setter hastighet til %f \n", timestep * acceleration[j][k]);
+				printf("Setter hastighet til %1.4e \n", timestep * acceleration[j][k]);
 				v[j][k] = v[j][k] + timestep * acceleration[j][k];
 				s[j][k] = s[j][k] + timestep * v[j][k];
 			}		
