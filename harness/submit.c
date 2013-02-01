@@ -29,6 +29,17 @@ void readnbody(double** s, double** v, double* m, int n) {
 				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
 				exit(0);
 			}
+			s[i][0] = x;
+			s[i][1] = y;
+			s[i][2] = z;
+
+			v[i][0] = vx;
+			v[i][1] = vy;
+			v[i][2] = vz;
+
+			s[i] = m;
+
+			
 		}
 	}
 }
