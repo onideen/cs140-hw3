@@ -13,32 +13,40 @@ double norm(double * x);
 
 
 void readnbody(double** s, double** v, double* m, int n) {
-	int myrank;
-	int nprocs;
-	int i;
+	int myrank, nprocs, nbody;
+	int i, j;
+	double* tmp;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-	
-	// This is an example of reading the body parameters from the input file. 
+			
+	nbody = n/nprocs;	
+	tmp = (double *)malloc(sizeof(double)*7*nbody;
+
+
+	// Node 0 reads the file and distributes the data to the right proc 
 	if (myrank == 0) {
-		for (i = 0; i < n; i++) {
-			double x, y, z, vx, vy, vz, ma;
+		for (i = 0; i < nprocs; i++) {
+			
+			//for each CPU we want to send the right data. !!! START OPP IGJEN HER
+			for (j = 0; j < nbody; j++) {
 
-			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
-			if (result != 7) {
-				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
-				exit(0);
+				double x, y, z, vx, vy, vz, ma;
+
+				int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
+				if (result != 7) {
+					fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
+					exit(0);
+				}
+				s[i][0] = x;
+				s[i][1] = y;
+				s[i][2] = z;
+
+				v[i][0] = vx;
+				v[i][1] = vy;
+				v[i][2] = vz;
+
+				m[i] = ma;
 			}
-			s[i][0] = x;
-			s[i][1] = y;
-			s[i][2] = z;
-
-			v[i][0] = vx;
-			v[i][1] = vy;
-			v[i][2] = vz;
-
-			m[i] = ma;
-
 			
 		}
 	}
