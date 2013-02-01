@@ -37,10 +37,6 @@ void gennbody(double** s, double** v, double* m, int n) {
 	double dist, theta;
 	printf("RAND_MAX: %i", RAND_MAX);
 	srand(time(NULL));
-	for(i = 0; i <10;i++){
-		printf("%f \n", (float)rand()/RAND_MAX);
-
-	}
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
@@ -54,8 +50,6 @@ void gennbody(double** s, double** v, double* m, int n) {
 			v[i][j] = 0;
 		}
 	}
-
-	printf("Generate nBody initial condition here.\n");
 }
 
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
