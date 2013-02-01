@@ -22,9 +22,9 @@ void readnbody(double** s, double** v, double* m, int n) {
 	// This is an example of reading the body parameters from the input file. 
 	if (myrank == 0) {
 		for (i = 0; i < n; i++) {
-			double x, y, z, vx, vy, vz, m;
+			double x, y, z, vx, vy, vz, ma;
 
-			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &m);
+			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
 			if (result != 7) {
 				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
 				exit(0);
@@ -37,7 +37,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 			v[i][1] = vy;
 			v[i][2] = vz;
 
-			m[i] = m;
+			m[i] = ma;
 
 			
 		}
