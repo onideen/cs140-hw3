@@ -36,11 +36,11 @@ void readnbody(double** s, double** v, double* m, int n) {
 void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
-	printf("RAND_MAX: %i", RAND_MAX);
-	srand(time(NULL));
+	printf("RAND_MAX: %i \n", RAND_MAX);
+//	srand(time(NULL));
 	for (i = 0; i < n; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
-		printf("m[i]: %1.4e \n", m[i]);		
+		printf("m[i]: %1.4e \n", m[i]);
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
 		theta = 2*M_PI*(float)rand()/RAND_MAX;
 
@@ -65,7 +65,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 	size = n / nprocs;
-	//m = (double *)malloc(sizeof(double) * 3);	
+	distance = (double *)malloc(sizeof(double) * 3);	
 	acceleration = (double **)malloc(sizeof(double *) * size);	
 
 	for (i = 0; i < size; i++) {
@@ -90,6 +90,8 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
 		for(j = 0; j < size;j++){			//for loop for en spesefikk planet
+			//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
+
 			for(k = 0; k < 3; k++){
 				acceleration[j][k] = 0;	
 			}	
@@ -100,11 +102,12 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					
 				}
 				r = norm(distance);
-				printf("Avstand mellom %i og %i er %1.4e \n",j,k,r);
+				//printf("Avstand mellom %i og %i er %1.4e \n",j,k,r);
 				if(r==0) continue;
-				f = (G * m[j] * m[k] ) / (r*r);
 				//f = 2.0;
-				printf("F er: %1.4e , G er: %1.4e , m[%i]: %1.4e, m[%i]: %1.4e \n", f, G,j,m[j],k,m[k]);
+				//printf("F er: %1.4e , G er: %1.4e , m[%i]: %1.4e, m[%i]: %1.4e \n", f, G,j,m[j],k,m[k]);
+				f = (G * m[j] * m[k] ) / (r*r);
+				
 				for(l = 0; l < 3;l++){
 					distance[l] = ((distance[l] * f )/ r) / m[j];
 					acceleration[j][l] = acceleration[j][l] - distance[l];
@@ -112,7 +115,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 			}
 			for(k=0;k<3;k++){
-				printf("Setter hastighet til %1.4e \n", timestep * acceleration[j][k]);
+				//printf("Setter hastighet til %1.4e \n", timestep * acceleration[j][k]);
 				v[j][k] = v[j][k] + timestep * acceleration[j][k];
 				s[j][k] = s[j][k] + timestep * v[j][k];
 			}		
