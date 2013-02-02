@@ -67,7 +67,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 		v[i][2] = tmp[i*7+5];
 
 		m[i] = tmp[i*7+6];
-		print("CPU %d: ", myrank);
+		printf("CPU %d: ", myrank);
 		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 	}
 	free(tmp);
