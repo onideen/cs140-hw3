@@ -205,7 +205,7 @@ double norm(double * x){
 void resetMatrix(double** matrix) {
 	int i, j;
 	for (i = 0; i < sizeof(matrix); i++)
-		for (j = 0; j < sizeof(matrix); j++)
+		for (j = 0; j < sizeof(matrix[0]); j++)
 			matrix[i][j] = 0;
 }
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
