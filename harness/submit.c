@@ -152,7 +152,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					
 			}
 			
-			
+			if (p == (nprocs-1)) continue;
 
 			if(myrank % 2 == 0){
 				//MPI Send first, then recieve
@@ -202,10 +202,12 @@ double norm(double * x){
 	return sum;
 }
 
-void resetMatrix(double** matrix, int size) {
-	int i, j;
-	for (i = 0; i < size; i++)
-		for (j = 0; j < 3; j++)
+void resetMatrix(double** matrix) {
+	int i, j, len, len0;
+	len = sizeof(matrix)/sizeof(double);
+	len0 = sizeof(matrix[0])/sizeof(double);
+	for (i = 0; i < len; i++)
+		for (j = 0; j < len0; j++)
 			matrix[i][j] = 0;
 }
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
