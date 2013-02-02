@@ -13,45 +13,77 @@ double norm(double * x);
 
 
 void readnbody(double** s, double** v, double* m, int n) {
-	int myrank;
-	int nprocs;
-	int i;
+	int myrank, nprocs, nbody;
+	int i, j, cpu;
+	double* tmp;
+	MPI_Status status;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-	
-	// This is an example of reading the body parameters from the input file. 
+			
+	nbody = n/nprocs;	
+	tmp = (double *)malloc(sizeof(double)*7*nbody);
+
+
+	// Node 0 reads the file and distributes the data to the right proc 
 	if (myrank == 0) {
-		for (i = 0; i < n; i++) {
-			double x, y, z, vx, vy, vz, ma;
+		for (cpu = 0; cpu < nprocs; cpu++) {
+			
+			//for each CPU we want to send the right data. !!! START OPP IGJEN HER
+			for (j = 0; j < nbody; j++) {
 
-			int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
-			if (result != 7) {
-				fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
-				exit(0);
+				double x, y, z, vx, vy, vz, ma;
+
+				int result = scanf(INPUT_BODY, &x, &y, &z, &vx, &vy, &vz, &ma);
+				if (result != 7) {
+					fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
+					exit(0);
+				} else {
+					 
+					tmp[j*7] = x;
+					tmp[j*7+1] = y;
+					tmp[j*7+2] = z;
+					tmp[j*7+3] = vx;
+					tmp[j*7+4] = vy;
+					tmp[j*7+5] = vz;
+					tmp[j*7+6] = ma;					
+				}
 			}
-
-			s[i][0] = x;
-			s[i][1] = y;
-			s[i][2] = z;
-
-			v[i][0] = vx;
-			v[i][1] = vy;
-			v[i][2] = vz;
-
-			m[i] = ma;
-
-
+			MPI_Send(&tmp[0], nbody*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);
 			
 		}
+	
 	}
+
+	MPI_Recv(&tmp[0], nbody*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+	for (i = 0; i < nbody; i++) {
+		s[i][0] = tmp[i*7];
+		s[i][1] = tmp[i*7+1];
+		s[i][2] = tmp[i*7+2];
+
+		v[i][0] = tmp[i*7+3];
+		v[i][1] = tmp[i*7+4];
+		v[i][2] = tmp[i*7+5];
+
+		m[i] = tmp[i*7+6];
+		printf("CPU %d: ", myrank);
+		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+	}
+	free(tmp);
+	 
 }
 
 void gennbody(double** s, double** v, double* m, int n) {
 	int i, j;
 	double dist, theta;
-//	printf("RAND_MAX: %i \n", RAND_MAX);
-//	srand(time(NULL));
-	for (i = 0; i < n; i++) {
+	int myrank, nprocs, nbody;
+	
+	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+
+	nbody = n/nprocs;
+
+	srand(time(NULL)*myrank);
+	for (i = 0; i < nbody; i++) {
 		m[i] = 1e30 * (float)rand()/RAND_MAX;
 		dist = 0.5e13 * (float)rand()/RAND_MAX;
 		theta = 2*M_PI*(float)rand()/RAND_MAX;
@@ -62,8 +94,9 @@ void gennbody(double** s, double** v, double* m, int n) {
 
 		for (j = 0; j < 3; j++) {
 			v[i][j] = 0;
-		}
+		}	
 	}
+
 }
 
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
