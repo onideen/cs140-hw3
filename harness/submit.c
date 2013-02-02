@@ -187,7 +187,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	free(acceleration);
 
 	for (p = 0; p < nprocs; p++) {
-		if (myrankrank == p) {
+		if (myrank == p) {
 			for (i = 0; i < size; i++) {
 				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 			}
