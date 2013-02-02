@@ -21,7 +21,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 			
 	nbody = n/nprocs;	
-	tmp = (double *)malloc(sizeof(double)*7*nbody;
+	tmp = (double *)malloc(sizeof(double)*7*nbody);
 
 
 	// Node 0 reads the file and distributes the data to the right proc 
