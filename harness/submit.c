@@ -14,7 +14,7 @@ double norm(double * x);
 
 void readnbody(double** s, double** v, double* m, int n) {
 	int myrank, nprocs, nbody;
-	int i, j;
+	int i, j, cpu;
 	double* tmp;
 	MPI_Status status;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
