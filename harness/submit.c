@@ -10,7 +10,7 @@ Team Member 2 : Vegar Engen
 #define M_PI 3.14159265358979323846
 #endif
 double norm(double * x);
-void resetMatrix(double** matrix);
+void resetMatrix(double** matrix, size);
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m);
 
 
@@ -124,7 +124,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
 		
-		resetMatrix(acceleration);
+		resetMatrix(acceleration, size);
 
 		for (k = 0; k < size; k++) {  
 			for(j = 0; j < 4; j++){
@@ -187,7 +187,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	free(acceleration);
 
 	for (p = 0; p < nprocs; p++) {
-		if (myrank == p) {
+		if (myrankrank == p) {
 			for (i = 0; i < size; i++) {
 				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 			}
@@ -211,10 +211,10 @@ double norm(double * x){
 	return sum;
 }
 
-void resetMatrix(double** matrix) {
+void resetMatrix(double** matrix, size) {
 	int i, j;
-	for (i = 0; i < sizeof(matrix); i++)
-		for (j = 0; j < sizeof(matrix[0]); j++)
+	for (i = 0; i < size; i++)
+		for (j = 0; j < 3; j++)
 			matrix[i][j] = 0;
 }
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
