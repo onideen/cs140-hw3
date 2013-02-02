@@ -65,8 +65,6 @@ void readnbody(double** s, double** v, double* m, int n) {
 		v[i][2] = tmp[i*7+5];
 
 		m[i] = tmp[i*7+6];
-	//	printf("CPU %d: ", myrank);
-	//	printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 	}
 	free(tmp);
 	 
@@ -100,8 +98,7 @@ void gennbody(double** s, double** v, double* m, int n) {
 }
 
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
-	int myrank;
-	int nprocs;
+	int myrank, nprocs;
 	int i,j,k, size, l, p;
 	double* distance;
 	double* currentplanets;
@@ -121,37 +118,15 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	tmp  = (double *)malloc(sizeof(double)*size*4);
 	
 
-	
 	for (i = 0; i < size; i++) {  
 		acceleration[i] = (double*)malloc(sizeof(double) * 3);
-	//	for(j = 0; j < 4; j++){
-	//		currentplanets[j+i*4] = (j == 3) ? m[i] : s[i][j];
-	//	}
-	//	printf("X: %1.4e, Y: %1.4e, Z: %1.4e, M: %1.4e \n", currentplanets[i*4],currentplanets[i*4+1],currentplanets[i*4+2],currentplanets[i*4+3]);
-	//	printf("X: %1.4e, Y: %1.4e, Z: %1.4e, M: %1.4e \n", s[i][0],s[i][1],s[i][2],m[i]);		
-		for(j = 0; j < 3; j++) {
-			acceleration[i][j] = 0;
-		}
 	}	
 
 	G = 6.674e-11;
-	
-
-	// s = posisjon
-	// v = hastighet
-	// m = masse
-	// n = antall planeter
-	// iter = antall steg
-	// timestep = tid mellom steg
-	// distance = avstandsvektor mellom 2 planeter
-
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
-		for(j = 0; j < size; j++){
-			for(k = 0; k < 3; k++){
-				acceleration[j][k] = 0;	
-			}
-		}
+		
+		resetMatrix(acceleration);
 
 		for (k = 0; k < size; k++) {  
 			for(j = 0; j < 4; j++){
@@ -163,10 +138,6 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 
 			for(j = 0; j < size;j++){			//for loop for en spesefikk planet
-				//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
-
-	
-			
 				for(k = 0; k< size;k++){		//alle planeter for en spesifikk
 					for(l = 0; l < 3;l++){
 						distance[l] = s[j][l] - currentplanets[k*4 +l];	
@@ -176,22 +147,21 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					f = (G * m[j] * currentplanets[k*4+3] ) / (r*r);	
 					for(l = 0; l < 3;l++){
 						distance[l] = ((distance[l] * f )/ r) / m[j];
-						//VI TROR DETTE ER DET SOM BLIR FEIL!!! OVERSKRIVES FOR HVER P
 						acceleration[j][l] = acceleration[j][l] - distance[l];
 					}
 
 				}
 					
 			}
-	
+			
+				
 
 			if(myrank % 2 == 0){
-				//MPI Send first
+				//MPI Send first, then recieve
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank+1)%nprocs, 0, MPI_COMM_WORLD);
 				MPI_Recv(&currentplanets[0], size*4, MPI_DOUBLE, (myrank-1)%nprocs, 0, MPI_COMM_WORLD, &status);
 			}else{
-				//MPI Recieve first
-				
+				//MPI Recieve first, then send
 				MPI_Recv(&tmp[0], size*4, MPI_DOUBLE, (myrank -1)%nprocs, 0, MPI_COMM_WORLD, &status);
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank +1)%nprocs, 0, MPI_COMM_WORLD);			
 				
@@ -203,7 +173,6 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 		}
 		for(j=0; j < size;j++){
 			for(k=0;k<3;k++){
-				//printf("Setter hastighet til %1.4e \n", timestep * acceleration[j][k]);
 				v[j][k] = v[j][k] + timestep * acceleration[j][k];
 				s[j][k] = s[j][k] + timestep * v[j][k];
 			}
@@ -218,19 +187,9 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	free(distance);
 	free(currentplanets);
 	free(acceleration);
-	
-	// This is an example of printing the body parameters to the stderr. Your code should print out the final body parameters
-	// in the exact order as the input file. Since we are writing to the stderr in this case, rather than the stdout, make
-	// sure you dont add extra debugging statements in stderr.
 
-	for (p = 0; p < nprocs; p++) {
-		if (myrank == p) {
-			for (i = 0; i < n / nprocs; i++) {
-				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
-			}
-		}
-		MPI_Barrier(MPI_COMM_WORLD);
-	}
+	printInOrder(myrank, nprocs, s, v, m);
+	
 }
 
 double norm(double * x){
@@ -245,3 +204,21 @@ double norm(double * x){
 	return sum;
 }
 
+void resetMatrix(double** matrix) {
+	int i, j;
+	for (i = 0; i < sizeof(matrix); i++)
+		for (j = 0; j < sizeof(matrix); j++)
+			matrix[i][j] = 0;
+}
+void printInOrder(int rank, int nprocs, double** s, double** v, double* m) {
+		
+	
+	for (p = 0; p < nprocs; p++) {
+		if (rank == p) {
+			for (i = 0; i < n / nprocs; i++) {
+				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+			}
+		}
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+}
