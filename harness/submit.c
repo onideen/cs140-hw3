@@ -186,7 +186,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	free(currentplanets);
 	free(acceleration);
 
-	printInOrder(myrank, nprocs, s, v, m);
+	printInOrder(myrank, nprocs, size, s, v, m);
 	
 }
 
@@ -208,10 +208,11 @@ void resetMatrix(double** matrix) {
 		for (j = 0; j < sizeof(matrix); j++)
 			matrix[i][j] = 0;
 }
-void printInOrder(int rank, int nprocs, double** s, double** v, double* m) {	
+void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
+	int p, i;	
 	for (p = 0; p < nprocs; p++) {
 		if (rank == p) {
-			for (i = 0; i < n / nprocs; i++) {
+			for (i = 0; i < nbodies; i++) {
 				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 			}
 		}
