@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 		free(v[i]);
 	}
 	
-	if(myrank == 0) {
+	if(myrank == 0)
 		printf("%s: %lf\n nbody: %lf\n Total: %lf\n", (strcmp(argv[1], "r") == 0) ? "Read" : "Generate", genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
 
 		
