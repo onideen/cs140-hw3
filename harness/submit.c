@@ -10,7 +10,7 @@ Team Member 2 : Vegar Engen
 #define M_PI 3.14159265358979323846
 #endif
 double norm(double * x);
-void resetMatrix(double** matrix, size);
+void resetMatrix(double** matrix, int size);
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m);
 
 
@@ -211,7 +211,7 @@ double norm(double * x){
 	return sum;
 }
 
-void resetMatrix(double** matrix, size) {
+void resetMatrix(double** matrix, int size) {
 	int i, j;
 	for (i = 0; i < size; i++)
 		for (j = 0; j < 3; j++)
