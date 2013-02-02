@@ -45,12 +45,10 @@ void readnbody(double** s, double** v, double* m, int n) {
 					tmp[j*7+3] = vx;
 					tmp[j*7+4] = vy;
 					tmp[j*7+5] = vz;
-					tmp[j*7+6] = ma;
-					
-					MPI_Send(&tmp[0], nbody*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);
+					tmp[j*7+6] = ma;					
 				}
-				
 			}
+			MPI_Send(&tmp[0], nbody*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);
 			
 		}
 	
