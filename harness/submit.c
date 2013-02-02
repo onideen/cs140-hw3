@@ -22,7 +22,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 			
-	nbody = n/nprocs;	
+	nbodies = n/nprocs;	
 	tmp = (double *)malloc(sizeof(double)*7*nbodies);
 
 
@@ -54,7 +54,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 		}
 	}
 
-	MPI_Recv(&tmp[0], nbody*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+	MPI_Recv(&tmp[0], nbodies*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
 	for (i = 0; i < nbodies; i++) {
 		s[i][0] = tmp[i*7];
 		s[i][1] = tmp[i*7+1];
