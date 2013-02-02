@@ -54,6 +54,8 @@ void readnbody(double** s, double** v, double* m, int n) {
 			
 		}
 	
+	}
+
 	MPI_Recv(&tmp[0], nbody*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
 	for (i = 0; i < nbody; i++) {
 		s[i][0] = tmp[i*7];
@@ -68,8 +70,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 		print("CPU %d: ", myrank);
 		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 	}
-	
-
+	free(tmp);
 	 
 }
 
