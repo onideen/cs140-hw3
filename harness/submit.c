@@ -16,6 +16,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 	int myrank, nprocs, nbody;
 	int i, j;
 	double* tmp;
+	MPI_Status status;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 			
@@ -25,7 +26,7 @@ void readnbody(double** s, double** v, double* m, int n) {
 
 	// Node 0 reads the file and distributes the data to the right proc 
 	if (myrank == 0) {
-		for (i = 0; i < nprocs; i++) {
+		for (cpu = 0; cpu < nprocs; cpu++) {
 			
 			//for each CPU we want to send the right data. !!! START OPP IGJEN HER
 			for (j = 0; j < nbody; j++) {
@@ -36,20 +37,40 @@ void readnbody(double** s, double** v, double* m, int n) {
 				if (result != 7) {
 					fprintf(stderr, "error reading body %d. Check if the number of bodies is correct.\n", i);
 					exit(0);
+				} else {
+					 
+					tmp[j*7] = x;
+					tmp[j*7+1] = y;
+					tmp[j*7+2] = z;
+					tmp[j*7+3] = vx;
+					tmp[j*7+4] = vy;
+					tmp[j*7+5] = vz;
+					tmp[j*7+6] = ma;
+					
+					MPI_Send(&tmp[0], nbody*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);
 				}
-				s[i][0] = x;
-				s[i][1] = y;
-				s[i][2] = z;
-
-				v[i][0] = vx;
-				v[i][1] = vy;
-				v[i][2] = vz;
-
-				m[i] = ma;
+				
 			}
 			
 		}
+	
+	MPI_Recv(&tmp[0], nbody*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
+	for (i = 0; i < nbody; i++) {
+		s[i][0] = tmp[i*7];
+		s[i][1] = tmp[i*7+1];
+		s[i][2] = tmp[i*7+2];
+
+		v[i][0] = tmp[i*7+3];
+		v[i][1] = tmp[i*7+4];
+		v[i][2] = tmp[i*7+5];
+
+		m[i] = tmp[i*7+6];
+		print("CPU %d: ", myrank);
+		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 	}
+	
+
+	 
 }
 
 void gennbody(double** s, double** v, double* m, int n) {
