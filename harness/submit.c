@@ -15,7 +15,7 @@ void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, dou
 
 
 void readnbody(double** s, double** v, double* m, int n) {
-	int myrank, nprocs, nbody;
+	int myrank, nprocs, nbodies;
 	int i, j, cpu;
 	double* tmp;
 	MPI_Status status;
@@ -23,15 +23,15 @@ void readnbody(double** s, double** v, double* m, int n) {
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 			
 	nbody = n/nprocs;	
-	tmp = (double *)malloc(sizeof(double)*7*nbody);
+	tmp = (double *)malloc(sizeof(double)*7*nbodies);
 
 
 	// Node 0 reads the file and distributes the data to the right proc 
 	if (myrank == 0) {
 		for (cpu = 0; cpu < nprocs; cpu++) {
 			
-			//for each CPU we want to send the right data. !!! START OPP IGJEN HER
-			for (j = 0; j < nbody; j++) {
+			//for each CPU we want to send the right data
+			for (j = 0; j < nbodies; j++) {
 
 				double x, y, z, vx, vy, vz, ma;
 
@@ -50,14 +50,12 @@ void readnbody(double** s, double** v, double* m, int n) {
 					tmp[j*7+6] = ma;					
 				}
 			}
-			MPI_Send(&tmp[0], nbody*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);
-			
+			MPI_Send(&tmp[0], nbodies*7, MPI_DOUBLE, cpu, 0, MPI_COMM_WORLD);	
 		}
-	
 	}
 
 	MPI_Recv(&tmp[0], nbody*7, MPI_DOUBLE, 0, 0, MPI_COMM_WORLD, &status);
-	for (i = 0; i < nbody; i++) {
+	for (i = 0; i < nbodies; i++) {
 		s[i][0] = tmp[i*7];
 		s[i][1] = tmp[i*7+1];
 		s[i][2] = tmp[i*7+2];
@@ -69,7 +67,6 @@ void readnbody(double** s, double** v, double* m, int n) {
 		m[i] = tmp[i*7+6];
 	}
 	free(tmp);
-	 
 }
 
 void gennbody(double** s, double** v, double* m, int n) {
@@ -107,7 +104,6 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	double** acceleration;
 	double r, G,f;
 	MPI_Status status;	
-	double* tmp;
 	
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
@@ -117,7 +113,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	acceleration = (double **)malloc(sizeof(double *) * size);	
 	// array med planeter x,y,z,masse	
 	currentplanets = (double *)malloc(sizeof(double) * 4 * size);	
-	tmp  = (double *)malloc(sizeof(double)*size*4);
+	
 	
 
 	for (i = 0; i < size; i++) {  
@@ -162,8 +158,10 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 				//MPI Send first, then recieve
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank+1)%nprocs, 0, MPI_COMM_WORLD);
 				MPI_Recv(&currentplanets[0], size*4, MPI_DOUBLE, (myrank-1)%nprocs, 0, MPI_COMM_WORLD, &status);
-			}else{
-				
+			}else{					
+				double* tmp;
+				tmp  = (double *)malloc(sizeof(double)*size*4);
+
 				//MPI Recieve first, then send
 				MPI_Recv(&tmp[0], size*4, MPI_DOUBLE, (myrank -1)%nprocs, 0, MPI_COMM_WORLD, &status);
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank +1)%nprocs, 0, MPI_COMM_WORLD);			
@@ -171,6 +169,8 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 				for (j = 0; j < size*4; j++) {
 					currentplanets[j] = tmp[j];
 				}
+
+				free(tmp);
 			}
 		}
 		for(j=0; j < size;j++){
@@ -181,7 +181,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 		}			
 	}
 
-	free(tmp);
+	
 	free(distance);
 	free(currentplanets);
 	free(acceleration);

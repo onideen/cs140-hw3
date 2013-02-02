@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
 	int nprocs;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+	double genstart, genstop, nbodystart, nbodystop;
 
 	int n, iters, timestep;
 
@@ -53,24 +54,32 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < size; i++) {
 		m[i] = 0;
 	}
+	MPI_Wtime(genstart);
 
 	if (strcmp(argv[1], "r") == 0) {
 		readnbody(s, v, m, n); 
 	} else {
-		gennbody(s, v, m, n);
+		gennbody(s, v, m, n);		
 	}
-
+	MPI_Wtime(genstop);
+	
+	MPI_Wtime(nbodystart);
 	nbody(s, v, m, n, iters, timestep);
+	MPI_Wtime(nbodystop);
 
 	for (i = 0; i < size; i++) {
 		free(s[i]);
 		free(v[i]);
 	}
+	
+	if(myrank == 0) {
+		printf("%s: %lf\n nbody: %lf\n Total: %lf\n", (strcmp(argv[1], "r") == 0) ? "Read" : "Generate", genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
 
+		
 	free(s);
 	free(v);
 	free(m);
-
+	
 	MPI_Finalize();
 	return 0;
 }
