@@ -10,6 +10,8 @@ Team Member 2 : Vegar Engen
 #define M_PI 3.14159265358979323846
 #endif
 double norm(double * x);
+void resetMatrix(double** matrix);
+void printInOrder(int rank, int nprocs, double** s, double** v, double* m);
 
 
 void readnbody(double** s, double** v, double* m, int n) {
@@ -161,6 +163,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank+1)%nprocs, 0, MPI_COMM_WORLD);
 				MPI_Recv(&currentplanets[0], size*4, MPI_DOUBLE, (myrank-1)%nprocs, 0, MPI_COMM_WORLD, &status);
 			}else{
+				
 				//MPI Recieve first, then send
 				MPI_Recv(&tmp[0], size*4, MPI_DOUBLE, (myrank -1)%nprocs, 0, MPI_COMM_WORLD, &status);
 				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank +1)%nprocs, 0, MPI_COMM_WORLD);			
@@ -169,18 +172,13 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					currentplanets[j] = tmp[j];
 				}
 			}
-		
 		}
 		for(j=0; j < size;j++){
 			for(k=0;k<3;k++){
 				v[j][k] = v[j][k] + timestep * acceleration[j][k];
 				s[j][k] = s[j][k] + timestep * v[j][k];
 			}
-		}
-		
-		
-				
-	
+		}			
 	}
 
 	free(tmp);
@@ -210,9 +208,7 @@ void resetMatrix(double** matrix) {
 		for (j = 0; j < sizeof(matrix); j++)
 			matrix[i][j] = 0;
 }
-void printInOrder(int rank, int nprocs, double** s, double** v, double* m) {
-		
-	
+void printInOrder(int rank, int nprocs, double** s, double** v, double* m) {	
 	for (p = 0; p < nprocs; p++) {
 		if (rank == p) {
 			for (i = 0; i < n / nprocs; i++) {
