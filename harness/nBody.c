@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	} else {
 		gennbody(s, v, m, n);		
 	}
-	MPI_Wtime(genstop);
+	genstop = MPI_Wtime();
 	
 	nbodystart = MPI_Wtime();
 	nbody(s, v, m, n, iters, timestep);
