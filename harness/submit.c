@@ -109,7 +109,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	double r, G,f;
 	MPI_Status status;	
 	double* tmp;
-	double* stmp;
+	
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -119,7 +119,6 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	// array med planeter x,y,z,masse	
 	currentplanets = (double *)malloc(sizeof(double) * 4 * size);	
 	tmp  = (double *)malloc(sizeof(double)*size*4);
-	stmp  = (double *)malloc(sizeof(double)*size*3);
 	
 
 	
