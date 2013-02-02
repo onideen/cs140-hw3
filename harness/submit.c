@@ -11,7 +11,7 @@ Team Member 2 : Vegar Engen
 #endif
 double norm(double * x);
 void resetMatrix(double** matrix);
-void printInOrder(int rank, int nprocs, double** s, double** v, double* m);
+void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m);
 
 
 void readnbody(double** s, double** v, double* m, int n) {
