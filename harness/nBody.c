@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 	for(i = 0; i < size; i++) {
 		m[i] = 0;
 	}
-	MPI_Wtime(genstart);
+	genstart = MPI_Wtime();
 
 	if (strcmp(argv[1], "r") == 0) {
 		readnbody(s, v, m, n); 
@@ -63,9 +63,9 @@ int main(int argc, char *argv[]) {
 	}
 	MPI_Wtime(genstop);
 	
-	MPI_Wtime(nbodystart);
+	nbodystart = MPI_Wtime();
 	nbody(s, v, m, n, iters, timestep);
-	MPI_Wtime(nbodystop);
+	nbodystop = MPI_Wtime();
 
 	for (i = 0; i < size; i++) {
 		free(s[i]);
