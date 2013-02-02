@@ -109,6 +109,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	double r, G,f;
 	MPI_Status status;	
 	double* tmp;
+	double* stmp;
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -118,6 +119,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	// array med planeter x,y,z,masse	
 	currentplanets = (double *)malloc(sizeof(double) * 4 * size);	
 	tmp  = (double *)malloc(sizeof(double)*size*4);
+	stmp  = (double *)malloc(sizeof(double)*size*3);
 	
 
 	
@@ -146,6 +148,12 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
+		for(j = 0; j < size; j++){
+			for(k = 0; k < 3; k++){
+				acceleration[j][k] = 0;	
+			}
+		}
+
 		for (k = 0; k < size; k++) {  
 			for(j = 0; j < 4; j++){
 				currentplanets[j+k*4] = (j == 3) ? m[k] : s[k][j];
@@ -158,9 +166,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 			for(j = 0; j < size;j++){			//for loop for en spesefikk planet
 				//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
 
-				for(k = 0; k < 3; k++){
-					acceleration[j][k] = 0;	
-				}	
+	
 			
 				for(k = 0; k< size;k++){		//alle planeter for en spesifikk
 					for(l = 0; l < 3;l++){
@@ -171,12 +177,14 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					f = (G * m[j] * currentplanets[k*4+3] ) / (r*r);	
 					for(l = 0; l < 3;l++){
 						distance[l] = ((distance[l] * f )/ r) / m[j];
+						//VI TROR DETTE ER DET SOM BLIR FEIL!!! OVERSKRIVES FOR HVER P
 						acceleration[j][l] = acceleration[j][l] - distance[l];
 					}
 
 				}
 					
 			}
+	
 
 			if(myrank % 2 == 0){
 				//MPI Send first
@@ -222,6 +230,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 			}
 		}
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
 }
 
