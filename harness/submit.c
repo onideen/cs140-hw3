@@ -65,8 +65,8 @@ void readnbody(double** s, double** v, double* m, int n) {
 		v[i][2] = tmp[i*7+5];
 
 		m[i] = tmp[i*7+6];
-		printf("CPU %d: ", myrank);
-		printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+	//	printf("CPU %d: ", myrank);
+	//	printf(OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
 	}
 	free(tmp);
 	 
@@ -102,12 +102,14 @@ void gennbody(double** s, double** v, double* m, int n) {
 void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	int myrank;
 	int nprocs;
-	int i,j,k, size, l;
+	int i,j,k, size, l, p;
 	double* distance;
 	double* currentplanets;
 	double** acceleration;
 	double r, G,f;
-	
+	MPI_Status status;	
+	double* tmp;
+
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
 	size = n / nprocs;
@@ -115,14 +117,17 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 	acceleration = (double **)malloc(sizeof(double *) * size);	
 	// array med planeter x,y,z,masse	
 	currentplanets = (double *)malloc(sizeof(double) * 4 * size);	
+	tmp  = (double *)malloc(sizeof(double)*size*4);
 	
 
 	
 	for (i = 0; i < size; i++) {  
 		acceleration[i] = (double*)malloc(sizeof(double) * 3);
-		for(j = 0; j < 4; j++){
-			currentplanets[j+i*4] = (j == 3) ? m[i] : s[i][j];
-		}
+	//	for(j = 0; j < 4; j++){
+	//		currentplanets[j+i*4] = (j == 3) ? m[i] : s[i][j];
+	//	}
+	//	printf("X: %1.4e, Y: %1.4e, Z: %1.4e, M: %1.4e \n", currentplanets[i*4],currentplanets[i*4+1],currentplanets[i*4+2],currentplanets[i*4+3]);
+	//	printf("X: %1.4e, Y: %1.4e, Z: %1.4e, M: %1.4e \n", s[i][0],s[i][1],s[i][2],m[i]);		
 		for(j = 0; j < 3; j++) {
 			acceleration[i][j] = 0;
 		}
@@ -141,35 +146,54 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
-		for(j = 0; j < size;j++){			//for loop for en spesefikk planet
-			//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
-
-			for(k = 0; k < 3; k++){
-				acceleration[j][k] = 0;	
-			}	
-			
-			for(k = 0; k< size;k++){		//alle planeter for en spesifikk
-				for(l = 0; l < 3;l++){
-					distance[l] = s[j][l] - s[k][l];
-					
-				}
-				r = norm(distance);
-			//	printf("X: %1.4e - %1.4e = %1.4e, Y: %1.4e, Z: %1.4e \n",s[j][0],s[0][0],distance[0],distance[1],distance[2]);
-			//	printf("Avstand mellom %i og %i er %1.4e \n",j,k,r);
-				if(r==0) continue;
-				//f = 2.0;
-				//printf("F er: %1.4e , G er: %1.4e , m[%i]: %1.4e, m[%i]: %1.4e \n", f, G,j,m[j],k,m[k]);
-				f = (G * m[j] * m[k] ) / (r*r);
-				
-				for(l = 0; l < 3;l++){
-					distance[l] = ((distance[l] * f )/ r) / m[j];
-					acceleration[j][l] = acceleration[j][l] - distance[l];
-				}
-
+		for (k = 0; k < size; k++) {  
+			for(j = 0; j < 4; j++){
+				currentplanets[j+k*4] = (j == 3) ? m[k] : s[k][j];
 			}
+			
+		}		
+		for(p = 0; p < nprocs ; p++){
+
+
+			for(j = 0; j < size;j++){			//for loop for en spesefikk planet
+				//printf("Masser, m[0] %1.4e, m[1] %1.4e, m[2] %1.4e, m[3] %1.4e \n",m[0],m[1],m[2],m[3]);	
+
+				for(k = 0; k < 3; k++){
+					acceleration[j][k] = 0;	
+				}	
+			
+				for(k = 0; k< size;k++){		//alle planeter for en spesifikk
+					for(l = 0; l < 3;l++){
+						distance[l] = s[j][l] - currentplanets[k*4 +l];	
+					}
+					r = norm(distance);
+					if(r==0) continue;
+					f = (G * m[j] * currentplanets[k*4+3] ) / (r*r);	
+					for(l = 0; l < 3;l++){
+						distance[l] = ((distance[l] * f )/ r) / m[j];
+						acceleration[j][l] = acceleration[j][l] - distance[l];
+					}
+
+				}
 					
-		}
+			}
+
+			if(myrank % 2 == 0){
+				//MPI Send first
+				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank+1)%nprocs, 0, MPI_COMM_WORLD);
+				MPI_Recv(&currentplanets[0], size*4, MPI_DOUBLE, (myrank-1)%nprocs, 0, MPI_COMM_WORLD, &status);
+			}else{
+				//MPI Recieve first
+				
+				MPI_Recv(&tmp[0], size*4, MPI_DOUBLE, (myrank -1)%nprocs, 0, MPI_COMM_WORLD, &status);
+				MPI_Send(&currentplanets[0], size*4, MPI_DOUBLE, (myrank +1)%nprocs, 0, MPI_COMM_WORLD);			
+				
+				for (j = 0; j < size*4; j++) {
+					currentplanets[j] = tmp[j];
+				}
+			}
 		
+		}
 		for(j=0; j < size;j++){
 			for(k=0;k<3;k++){
 				//printf("Setter hastighet til %1.4e \n", timestep * acceleration[j][k]);
@@ -177,17 +201,26 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 				s[j][k] = s[j][k] + timestep * v[j][k];
 			}
 		}
+		
+		
+				
+	
 	}
 
-
+	free(tmp);
+	free(distance);
+	free(currentplanets);
+	free(acceleration);
 	
 	// This is an example of printing the body parameters to the stderr. Your code should print out the final body parameters
 	// in the exact order as the input file. Since we are writing to the stderr in this case, rather than the stdout, make
 	// sure you dont add extra debugging statements in stderr.
 
-	if (myrank == 0) {
-		for (i = 0; i < n / nprocs; i++) {
-			fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+	for (p = 0; p < nprocs; p++) {
+		if (myrank == p) {
+			for (i = 0; i < n / nprocs; i++) {
+				fprintf(stderr, OUTPUT_BODY, s[i][0], s[i][1], s[i][2], v[i][0], v[i][1], v[i][2], m[i]);
+			}
 		}
 	}
 }
