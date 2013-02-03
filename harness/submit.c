@@ -124,7 +124,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
 		
-		resetMatrix(acceleration);
+		resetMatrix(*acceleration);
 		
 		for (k = 0; k < size; k++)
 			for (j = 0; j < 3; j++)
