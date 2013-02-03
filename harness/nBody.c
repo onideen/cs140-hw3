@@ -1,4 +1,5 @@
 #include "nBody.h"
+#include "unistd.h"
 
 int main(int argc, char *argv[]) {
 
@@ -71,7 +72,7 @@ int main(int argc, char *argv[]) {
 		free(s[i]);
 		free(v[i]);
 	}
-	Sleep(1000);
+	sleep(1000);
 	if(myrank == 0)
 		printf("%s: %lf\nnbody: %lf\nTotal: %lf\n", (strcmp(argv[1], "r") == 0) ? "Read" : "Generate", genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
 
