@@ -10,7 +10,7 @@ Team Member 2 : Vegar Engen
 #define M_PI 3.14159265358979323846
 #endif
 double norm(double * x);
-void resetMatrix(double** matrix);
+void resetMatrix(double** matrix, int size);
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m);
 
 
@@ -124,7 +124,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 
 	for(i = 0; i < iter; i++){				//for loop over iterasjoner
 		
-		resetMatrix(acceleration);
+		resetMatrix(acceleration, size);
 		
 		for (k = 0; k < size; k++)
 			for (j = 0; j < 3; j++)
@@ -207,13 +207,13 @@ double norm(double * x){
 	return sum;
 }
 
-void resetMatrix(double** matrix) {
+void resetMatrix(double** matrix, size) {
 	int i, j, len, len0;
-	len = sizeof(*matrix);
-	len0 = sizeof(*matrix[0]);
-	printf("Len: %d\nLen0: %d\n", len, len0);
-	for (i = 0; i < len; i++)
-		for (j = 0; j < len0; j++)
+//	len = sizeof(*matrix);
+//	len0 = sizeof(*matrix[0]);
+//	printf("Len: %d\nLen0: %d\n", len, len0);
+	for (i = 0; i < size; i++)
+		for (j = 0; j < 3; j++)
 			matrix[i][j] = 0;
 }
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
