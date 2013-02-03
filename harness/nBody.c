@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	}
 	sleep(1);
 	if(myrank == 0)
-		printf("%s: %lf\nnbody: %lf\nTotal: %lf\n", (strcmp(argv[1], "r") == 0) ? "Read" : "Generate", genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
+		printf("%i, %i, %lf, %lf, %lf \n",nprocs, n, genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
 
 		
 	free(s);
