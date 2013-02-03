@@ -209,11 +209,11 @@ double norm(double * x){
 
 void resetMatrix(double** matrix) {
 	int i, j, len, len0;
-	len = sizeof(matrix)/sizeof(matrix[0]);
+	len = sizeof(matrix);
 	len0 = sizeof(matrix[0])/sizeof(matrix[0][0]);
 	printf("Len: %d\nLen0: %d\n", len, len0);
-	for (i = 0; i < 2; i++)
-		for (j = 0; j < 3; j++)
+	for (i = 0; i < len; i++)
+		for (j = 0; j < len0; j++)
 			matrix[i][j] = 0;
 }
 void printInOrder(int rank, int nprocs, int nbodies, double** s, double** v, double* m) {	
