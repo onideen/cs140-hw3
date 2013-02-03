@@ -157,7 +157,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 					
 			}
 			
-			//if (p == (nprocs-1)) continue;
+			if (p == (nprocs-1)) continue;
 
 			if(myrank % 2 == 0){
 				//MPI Send first, then recieve
