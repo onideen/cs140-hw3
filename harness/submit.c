@@ -209,8 +209,8 @@ double norm(double * x){
 
 void resetMatrix(double** matrix) {
 	int i, j, len, len0;
-	len = sizeof(matrix)/sizeof(double);
-	len0 = sizeof(matrix[0])/sizeof(double);
+	len = sizeof(matrix)/sizeof(matrix[0]);
+	len0 = sizeof(matrix[0])/sizeof(matrix[0][0]);
 	printf("Len: %d\nLen0: %d\n", len, len0);
 	for (i = 0; i < 2; i++)
 		for (j = 0; j < 3; j++)
