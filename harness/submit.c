@@ -128,7 +128,7 @@ void nbody(double** s, double** v, double* m, int n, int iter, int timestep) {
 		
 		for (k = 0; k < size; k++)
 			for (j = 0; j < 3; j++)
-				printf("A[%d][%d]: %1.4e", k, j acceleration[k][j]);
+				printf("A[%d][%d]: %1.4e", k, j, acceleration[k][j]);
 		
 
 		for (k = 0; k < size; k++) {  
