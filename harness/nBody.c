@@ -80,7 +80,8 @@ int main(int argc, char *argv[]) {
 	free(m);
 	
 	MPI_Finalize();
-
+	
+	printf("CPU: ", myrank)
 	printf("%s: %lf\nnbody: %lf\nTotal: %lf\n", (strcmp(argv[1], "r") == 0) ? "Read" : "Generate", genstop-genstart, nbodystop-nbodystart, nbodystop-genstart);
 	return 0;
 }
