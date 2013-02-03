@@ -207,7 +207,7 @@ double norm(double * x){
 	return sum;
 }
 
-void resetMatrix(double** matrix, size) {
+void resetMatrix(double** matrix, int size) {
 	int i, j, len, len0;
 //	len = sizeof(*matrix);
 //	len0 = sizeof(*matrix[0]);
